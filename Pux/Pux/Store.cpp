@@ -16,18 +16,17 @@ namespace Store {
 	vector<vector<string>> selectQuarterlyReportDates() {
 		sqlite3* database;
 		sqlite3_stmt* statement;
-		vector<vector<string>> selectedData = { {}, {}, {}, {}, {} };
+		vector<vector<string>> selectedData = {};
 		
 		if (sqlite3_open(sqlLite3DBDirectory, &database) == SQLITE_OK) {
 			sqlite3_prepare(database, "SELECT * FROM quarterly_earnings LIMIT 10", -1, &statement, nullptr);
 			sqlite3_step(statement);
 			while (sqlite3_column_text(statement, 0)) {
+				vector<string> row(4);
 				for (int i = 0; i < 4; i++) {
-					// cout << reinterpret_cast<const char*>(sqlite3_column_text(statement, i)) << endl;
-					selectedData.at(i).push_back(reinterpret_cast<const char*>(sqlite3_column_text(statement, i)));
-					// selectedData.at(i).push_back(string((char*)sqlite3_column_text(statement, i)));
-					// cout << sqlite3_column_text(statement, i) << endl;
+					row.at(i) = reinterpret_cast<const char*>(sqlite3_column_text(statement, i));
 				}
+				selectedData.push_back(row);
 				sqlite3_step(statement);
 			}
 			sqlite3_finalize(statement);
