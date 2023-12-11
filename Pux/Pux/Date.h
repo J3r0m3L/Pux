@@ -10,10 +10,11 @@ using std::map;
 
 class Date {
 private:
-	static bool compareTM(const tm& tm1, const tm& tm2);
+	static bool compareDates(const Date& date1, const Date& date2);
 
 public:
 	int month, day, year;
+	string strDate;
 	tm tmDate;
 
 	// date example: "Oct 31, 2024"

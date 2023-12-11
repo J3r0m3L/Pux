@@ -8,19 +8,36 @@ using std::endl;
 using std::vector;
 
 int main() {
-	vector<vector<string>> tmp = Store::selectQuarterlyReportDates();
-	// Right now matrix is rotated 90
-	/* 
-	* Goal of Date Class is to find the average number of days between.
-	* If not too much variation then we can find future quarterly report dates by just adding days
-	* If there is too much variation then we can assume that future quarterly reports will occur the same day as last year
-	*/
 
-	for (int i = 1; i < tmp.size(); i++) {
+	// Lets get the number of stock market
+	// For now:
+	// 1. Grab new entries from database. For a specific stock.
+	//		a. create function to get distinct companies
+	// 2. Use dates, to find the volatility a week, month, day before quarterly report.
+	//		a. Implement blackscholes and determine good strike price to settle on with volatility. 
+	// 3. Lastly compare the shit.
 	
-		cout << tmp.at(i).at(2) << endl;
-		Date(tmp.at(i).at(2));
-		break;
+	
+	vector<vector<string>> quarterlyReportDates = Store::selectQuarterlyReportDates();
+	//std::cout << quarterlyReportDates.size() << std::endl;
+	for (int i = 0; i < quarterlyReportDates.size(); i++) {
+		for (int j = 0; j < quarterlyReportDates[i].size(); j++) {
+			//std::cout << quarterlyReportDates[i][j] << std::endl;
+		}
 	}
+
+
+	vector<string> distinctCompaniesTickers = Store::selectDistinctCompanyTickers();
+	for (int i = 0; i < distinctCompaniesTickers.size(); i++) {
+		// std::cout << distinctCompaniesTickers[i] << std::endl;
+	}
+	vector<vector<string>> prices = Store::selectEntriesByCompanyTicker("FLWS");
+	for (int i = 0; i < prices.size(); i++) {
+		for (int j = 0; j < prices[i].size(); j++) {
+			std::cout << prices[i][j] << std::endl;
+		}
+	}
+
+
 	return 0;
 }
