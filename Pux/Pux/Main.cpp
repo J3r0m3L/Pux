@@ -2,6 +2,8 @@
 #include <vector>
 #include "Store.h"
 #include "Date.h"
+#include "Gaussian.h"
+#include "BlackScholes.h"
 
 using std::cout;
 using std::endl;
