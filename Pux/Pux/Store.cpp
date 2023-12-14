@@ -14,13 +14,14 @@ using namespace std;
 namespace Store {
 	const char* sqlLite3DBDirectory = "./StockData/SpecialEvents.db";
 
-	vector<vector<string>> selectQuarterlyReportDates() {
+	vector<vector<string>> selectQuarterlyReportDates(string companyTicker) {
 		sqlite3* database;
 		sqlite3_stmt* statement;
 		vector<vector<string>> selectedData = {};
 		
 		if (sqlite3_open(sqlLite3DBDirectory, &database) == SQLITE_OK) {
-			sqlite3_prepare(database, "SELECT * FROM quarterly_earnings LIMIT 20", -1, &statement, nullptr);
+			sqlite3_prepare_v2(database, "SELECT * FROM quarterly_earnings WHERE company_ticker = ?", -1, &statement, nullptr);
+			sqlite3_bind_text(statement, 1, companyTicker.c_str(), -1, SQLITE_STATIC);
 			sqlite3_step(statement);
 			while (sqlite3_column_text(statement, 0)) {
 				vector<string> row(4);

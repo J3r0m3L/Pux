@@ -9,7 +9,8 @@ using std::string;
 namespace Store {
 	extern const char* sqlLite3DBDirectory;
 
-	vector<vector<string>> selectQuarterlyReportDates();
+	// todo: instead of storing in vector<vector<string>> these really should be stored in objects
+	vector<vector<string>> selectQuarterlyReportDates(string companyTicker);
 
 	vector<string> selectDistinctCompanyTickers();
 
