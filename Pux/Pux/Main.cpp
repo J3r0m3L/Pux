@@ -34,7 +34,7 @@ int main() {
 	}
 	std::cout << "Successfully Ran" << std::endl;
 
-
+	std::cout << TimeHandler::getDayOfWeek(TimeHandler::convertDateToUnixTimestamp("Oct 31, 2024")) << std::endl;
 
 
 

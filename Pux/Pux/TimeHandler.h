@@ -3,22 +3,33 @@
 #include <ctime>
 #include <string>
 #include <map>
+#include <set>
 
 using std::time_t;
 using std::vector;
+using std::set;
 using std::string;
 using std::map;
 
-namespace TimeHandler {
-	// date example: "Oct 31, 2024"
-	time_t convertDateToUnixTimestamp(string date);
+class TimeHandler {
+public:
+	static time_t convertDateToUnixTimestamp(int month, int day, int year);
 
-	int findDaysBetweenDates(string startDate, string endDate);
+	static vector<int> convertUnixTimestampToDate(time_t timeStamp);
 
-	int findDaysBetweenUnixTimestamps(time_t startTimestamp, time_t endTimestamp);
+	static int findDaysBetween(time_t startTimestamp, time_t endTimestamp);
 
-	string getDayOfWeek(time_t timestamp);
+	static string getDayOfWeek(time_t timestamp);
 
-	// current exchanges: XNYS, XNAS (combine all holidays)
-	bool isStockExchangeOpen();
-}
+	static bool isStockExchangeOpen(time_t timestamp);
+private:
+	static void generateHolidaySetIfEmpty(time_t startTimestamp, time_t endTimestamp);
+
+	static time_t findxDayOfMonth(int x, string dayOfWeek, int month, int year);
+
+	static time_t findLastDayOfMonth(string dayOfWeek, int month, int year);
+
+	static set<time_t> holidays;
+
+	TimeHandler();
+};
