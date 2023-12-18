@@ -19,12 +19,17 @@ using std::time_t;
 
 // Looks like we do have dates all the way up to Late 2024, which means we don't have to infer new dates.
 // Also there is too much variation between quarters (Q1 vs. Q2 vs...).
+
+map<string, int> TimeHandler::convertMonthToIndex = { {"Jan", 1}, {"Feb", 2}, {"Mar", 3}, {"Apr", 4},
+															{"May", 5}, {"Jun", 6}, {"Jul", 7}, {"Aug", 8},
+															{"Sep", 9}, {"Oct", 10}, {"Nov", 11}, {"Dec", 12} };
+
 map<int, string> indexToDay = { {0, "Sunday"}, {1, "Monday"}, {2, "Tuesday"}, {3, "Wednesday"},
 								{4, "Thursday"}, {5, "Friday"}, {6, "Saturday"} };
 
 map<int, int> monthToDaysInMonth = { {1, 31}, {2, 28}, {3, 31}, {4, 30},
-										{5, 31}, {6, 30}, {7, 31}, {8, 31},
-										{9, 30}, {10, 31}, {11, 30}, {12, 31} };
+									 {5, 31}, {6, 30}, {7, 31}, {8, 31},
+									 {9, 30}, {10, 31}, {11, 30}, {12, 31} };
 
 map<int, time_t> goodFridayDates = {
 	{ 2015, TimeHandler::convertDateToUnixTimestamp(4, 3, 2015) },
@@ -42,9 +47,11 @@ map<int, time_t> goodFridayDates = {
 	{ 2027, TimeHandler::convertDateToUnixTimestamp(3, 26, 2027) },
 };
 
+set<time_t> TimeHandler::holidays;
+
 time_t TimeHandler::convertDateToUnixTimestamp(int month, int day, int year) {
 	tm timeStruct = {};
-	timeStruct.tm_mon = month;
+	timeStruct.tm_mon = month - 1;
 	timeStruct.tm_mday = day;
 	timeStruct.tm_year = year - 1900;
 
@@ -55,12 +62,23 @@ time_t TimeHandler::convertDateToUnixTimestamp(int month, int day, int year) {
 vector<int> TimeHandler::convertUnixTimestampToDate(time_t timestamp) {
 	struct tm timeStruct;
 	localtime_s(&timeStruct, &timestamp);
-	return { timeStruct.tm_mon, timeStruct.tm_mday, timeStruct.tm_year + 1900 };
+	return { timeStruct.tm_mon + 1, timeStruct.tm_mday, timeStruct.tm_year + 1900 };
 }
 
+bool TimeHandler::compareTimestamps(const time_t timestamp1, const time_t timestamp2) {
+	struct tm timeStruct1, timeStruct2;
+	localtime_s(&timeStruct1, &timestamp1);
+	localtime_s(&timeStruct2, &timestamp2);
+
+	return (timeStruct1.tm_year == timeStruct2.tm_year)
+		&& (timeStruct1.tm_mon == timeStruct2.tm_mon)
+		&& (timeStruct1.tm_mday == timeStruct2.tm_mday);
+}
+
+// Need to stop, worked on the wrong function. Something is wrong such that the end of some months becomes first months.
 int TimeHandler::findDaysBetween(time_t startTimestamp, time_t endTimestamp) {
 	double differenceInSeconds = std::difftime(endTimestamp, startTimestamp);
-	return differenceInSeconds / (24 * 60 * 60);
+	return int (differenceInSeconds / (24 * 60 * 60));
 }
 
 string TimeHandler::getDayOfWeek(time_t timestamp) {
@@ -68,6 +86,20 @@ string TimeHandler::getDayOfWeek(time_t timestamp) {
 	localtime_s(&timeStruct, &timestamp);
 	int dayOfWeek = timeStruct.tm_wday;
 	return indexToDay[dayOfWeek];
+}
+
+time_t TimeHandler::getTimestampxTradingDaysBeforeTimestamp(int days, time_t timestamp) {
+	time_t timestampCopy = timestamp;
+	int dayInSeconds = 24 * 60 * 60;
+
+	for (int i = 0; i < days; i++) {
+		timestampCopy -= dayInSeconds;
+		if (!isStockExchangeOpen(timestampCopy)) {
+			i--;
+		}
+	}
+	
+	return timestampCopy;
 }
 
 bool TimeHandler::isStockExchangeOpen(time_t timestamp) {
@@ -102,7 +134,7 @@ void TimeHandler::generateHolidaySetIfEmpty(time_t startTimestamp, time_t endTim
 		};
 		for (time_t holiday : yearlyHolidays) {
 			vector<int> date = convertUnixTimestampToDate(holiday);
-			if (date[0] > endDate[0] && date[1] > endDate[1] && year == endYear) break;
+			if (date[0] >= endDate[0] && date[1] >= endDate[1] && year == endYear) break;
 			if (holiday > startTimestamp) holidays.insert(holiday);
 		}
 	}

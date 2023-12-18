@@ -13,6 +13,8 @@ using std::map;
 
 class TimeHandler {
 public:
+	static map<string, int> convertMonthToIndex;
+
 	static time_t convertDateToUnixTimestamp(int month, int day, int year);
 
 	static vector<int> convertUnixTimestampToDate(time_t timeStamp);
@@ -22,6 +24,10 @@ public:
 	static string getDayOfWeek(time_t timestamp);
 
 	static bool isStockExchangeOpen(time_t timestamp);
+
+	static time_t getTimestampxTradingDaysBeforeTimestamp(int days, time_t timestamp);
+
+	static bool compareTimestamps(const time_t timestamp1, const time_t timestamp2);
 private:
 	static void generateHolidaySetIfEmpty(time_t startTimestamp, time_t endTimestamp);
 

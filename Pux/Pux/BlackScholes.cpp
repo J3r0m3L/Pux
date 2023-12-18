@@ -7,13 +7,13 @@ double strikePrice; // dollars
 double interestRate; // percentage
 double volatility; // percentage
 double timeToMaturity; // years
+double optionPrice; // dollars
 
 // todo: either look into templates to generate constructor or overload it in the future
-BlackScholes::BlackScholes(double sharePrice, double strikePrice, double interestRate, double volatility, double timeToMaturity) {
+BlackScholes::BlackScholes(double sharePrice, double strikePrice, double interestRate, double timeToMaturity) {
 	this->sharePrice = sharePrice;
 	this->strikePrice = strikePrice;
 	this->interestRate = interestRate;
-	this->volatility = volatility;
 	this->timeToMaturity = timeToMaturity;
 }
 
@@ -21,24 +21,28 @@ BlackScholes::BlackScholes(double sharePrice, double strikePrice, double interes
 double BlackScholes::calclulateCallPrice() {
 	double d1 = log(sharePrice / strikePrice) + ((interestRate + pow(volatility, 2) / 2) * timeToMaturity) / (volatility * sqrt(timeToMaturity));
 	double d2 = d1 - sqrt(volatility);
-	return Gaussian::cdf(d1) * sharePrice - Gaussian::cdf(d2) * strikePrice * exp(-interestRate * timeToMaturity);
+	this->optionPrice = Gaussian::cdf(d1) * sharePrice - Gaussian::cdf(d2) * strikePrice * exp(-interestRate * timeToMaturity);
+	return optionPrice;
 }
 
 double BlackScholes::calculatePutPrice() {
 	double d1 = log(sharePrice / strikePrice) + ((interestRate + pow(volatility, 2) / 2) * timeToMaturity) / (volatility * sqrt(timeToMaturity));
 	double d2 = d1 - sqrt(volatility);
-	return Gaussian::cdf(-d2) * strikePrice * exp(-interestRate * timeToMaturity) - sharePrice * Gaussian::cdf(-d1);
+	this->optionPrice = Gaussian::cdf(-d2) * strikePrice * exp(-interestRate * timeToMaturity) - sharePrice * Gaussian::cdf(-d1);
+	return optionPrice;
 }
 
 
-double BlackScholes::callVolatility() {
+double BlackScholes::calculateCallVolatility() {
 	double numerator = 2 * log(sharePrice / strikePrice) + 2 * interestRate * timeToMaturity;
 	double denominator = interestRate;
-	return sqrt(numerator / denominator);
+	this->volatility = sqrt(numerator / denominator);
+	return volatility;
 }
 
-double BlackScholes::putVolatility() {
+double BlackScholes::calculatePutVolatility() {
 	double numerator = 2 * log(strikePrice / sharePrice) + 2 * interestRate * timeToMaturity;
 	double denominator = interestRate;
-	return sqrt(numerator / denominator);
+	this->volatility = sqrt(numerator / denominator);
+	return volatility;
 }

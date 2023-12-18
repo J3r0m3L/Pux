@@ -7,11 +7,12 @@ public:
 	double interestRate; // percentage
 	double volatility; // percentage
 	double timeToMaturity; // years
+	double optionPrice; // dollars
 
-	BlackScholes(double sharePrice, double strikePrice, double interestRate, double volatility, double timeToMaturity);
+	BlackScholes(double sharePrice, double strikePrice, double interestRate, double timeToMaturity);
 
 	double calclulateCallPrice();
 	double calculatePutPrice();
-	double callVolatility();
-	double putVolatility();
+	double calculateCallVolatility();
+	double calculatePutVolatility();
 };
